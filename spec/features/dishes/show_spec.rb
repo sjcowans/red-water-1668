@@ -6,6 +6,7 @@ RSpec.describe 'dishes show', type: :feature do
     @dish_1 = @chef_1.dishes.create!(name: "yumyum", description: "Delicioso!")
     @ingrediant_1 = Ingrediant.create!(name: "Summathis", calories: 1000)
     @ingrediant_2 = Ingrediant.create!(name: "Summathat", calories: 1000)
+    @ingrediant_3 = Ingrediant.create!(name: "Saucy Sauce", calories: 2000)
     DishIngrediant.create!(dish_id: @dish_1.id, ingrediant_id: @ingrediant_1.id)
     DishIngrediant.create!(dish_id: @dish_1.id, ingrediant_id: @ingrediant_2.id)
 
@@ -27,7 +28,15 @@ RSpec.describe 'dishes show', type: :feature do
   end
 
   it 'has chefs name' do
-    save_and_open_page
     expect(page).to have_content(@chef_1.name)
+  end
+
+  it 'can add ingrediant to dish' do
+    expect(page).to have_content('Add Ingrediant')
+    fill_in 'ingrediant_id', with: "#{@ingrediant_3.id}"
+    click_on 'Save'
+    @dish_1.reload
+    expect(page).to have_current_path("/dishes/#{@dish_1.id}")
+    expect(page).to have_content(@ingrediant_3.name)
   end
 end

@@ -7,3 +7,11 @@ Ingrediants: <% @dish.ingrediants.each do |ingrediant| %>
 </p>
 <p>Calories: <%= @dish.ingrediants.calorie_count %></p>
 <p> Chef: <%= @dish.chef.name %> </p>
+
+<p>Add Ingrediant:</p>
+<%= form_with url: "/dishes/#{@dish.id}/dishingrediants", method: :post, local: true do |f| %>
+  <%= f.label :ingrediant_id %>
+  <%= f.text_field :ingrediant_id %>
+
+  <%= f.submit %>
+<% end %>
