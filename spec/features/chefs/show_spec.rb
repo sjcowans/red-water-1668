@@ -1,14 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Chef, type: :model do
-  describe "validations" do
-    it {should validate_presence_of :name}
-  end
-  describe "relationships" do
-    it {should have_many :dishes}
-  end
-
-  it 'can show unique ingrediants' do
+RSpec.describe 'chefs show', type: :feature do
+  before(:each) do
     @chef_1 = Chef.create!(name: "Joe")
     @dish_1 = @chef_1.dishes.create!(name: "yumyum", description: "Delicioso!")
     @dish_2 = @chef_1.dishes.create!(name: "Omnomnom", description: "Delicioso!")
@@ -22,6 +15,19 @@ RSpec.describe Chef, type: :model do
     DishIngrediant.create!(dish_id: @dish_2.id, ingrediant_id: @ingrediant_2.id)
     DishIngrediant.create!(dish_id: @dish_2.id, ingrediant_id: @ingrediant_4.id)
 
-    expect(@chef_1.unique_ingrediants).to eq([@ingrediant_1, @ingrediant_2, @ingrediant_4])
+    visit "/chefs/#{@chef_1.id}"
+  end
+
+  it 'has link for chefs items' do 
+    expect(page).to have_link("Chefs Ingrediants")
+  end
+
+  it 'goes to chefs items index page with unique items' do
+    click_on 'Chefs Ingrediants'
+    expect(current_path).to eq("/chefs/#{@chef_1.id}/ingrediants")
+    expect(page).to have_content(@ingrediant_1.name, count: 1)
+    expect(page).to have_content(@ingrediant_2.name, count: 1)
+    expect(page).to have_content(@ingrediant_4.name, count: 1)
+    expect(page).to have_no_content(@ingrediant_3.name)
   end
 end
